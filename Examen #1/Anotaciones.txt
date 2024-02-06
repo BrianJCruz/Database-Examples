@@ -1,0 +1,19 @@
+-------------------------------------------------
+
+Primeras 5 preguntas de moodle:
+    - Ventajas y desventajas de los archivos indexados, de acceso directo y secuenciales.
+    - Lo que es un DBMS
+    - Lo que es Metadata
+    - Modelo logico, conceptual y fisico
+    - Modelo jerarquico, de red y relacional
+
+Bono:
+
+    - Diferencia entre compilador e Interprete
+
+-------------------------------------------------
+
+Cosas a tener en cuenta:
+
+    * Las ventajas deben ser solo las principales.
+    * No  es necerario abundar en tus propias palabras, solo decir exactamente lo que esta en el ppt.

@@ -1,0 +1,382 @@
+-- ----------------------------------------------------------------
+-- -   Author     : Brian J. Cruz Castro                          -
+-- -   Num.Est    : 841-21-5975                                   -
+-- -   Curso      : SICI-4030                                     -
+-- -   Sección    : LH1                                           -
+-- -   Source     : Proyecto-1X-2023.sql                          -
+-- -   Comentario : Este script es para el examen #2              -
+-- ----------------------------------------------------------------
+-- ----------------------------------------------------------------
+-- -  EL SET ECHO ON permite ver la corrida en pantalla.         -
+-- ----------------------------------------------------------------
+SET ECHO ON
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Aquí se borran las tablas en caso de tener que volver a   -
+-- -  crearlas, esta sub dividido por niveles.                    -
+-- ----------------------------------------------------------------
+DROP TABLE linea_detalle;
+DROP TABLE orden;
+DROP TABLE pieza;
+DROP TABLE empleado;
+DROP TABLE cliente;
+DROP TABLE bicicleta;
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla bicicleta nivel-1 (Indicar el nivel SIEMPRE)                       -
+-- ----------------------------------------------------------------
+CREATE TABLE bicicleta (
+    codigo_pk               NUMBER(5),
+    nombre                  VARCHAR2(15)       NOT NULL,
+    marca                   VARCHAR2(15)       NOT NULL,
+    modelo                  VARCHAR2(15)       NOT NULL,
+    descripcion             VARCHAR2(50),
+    costo                   NUMBER(6,2)        NOT NULL,
+    precio_venta            NUMBER(6,2)        NOT NULL,
+    cantidad                NUMBER(4)          NOT NULL,
+CONSTRAINT bicicleta_codigo_pk 
+    PRIMARY KEY(codigo_pk)
+);
+
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla cliente nivel-1(Indicar el nivel SIEMPRE)-
+-- ----------------------------------------------------------------
+CREATE TABLE cliente (
+    celular_pk              VARCHAR2(13)       NOT NULL,
+    nombre                  VARCHAR2(15),
+    inicial                 CHAR(1),
+    apellido_paterno        VARCHAR2(13)       NOT NULL,
+    apellido_materno        VARCHAR2(13),
+    linea_1                 VARCHAR2(50)       NOT NULL,
+    linea_2                 VARCHAR2(50),
+    urban_barrio            VARCHAR2(15),
+    ciudad                  VARCHAR2(35)       NOT NULL,
+    estado                  VARCHAR2(35)       NOT NULL,
+    zipcode                 NUMBER(5)          NOT NULL,
+    email                   VARCHAR2(35),
+CONSTRAINT cliente_celular_pk 
+    PRIMARY KEY(celular_pk)
+);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla empleado    nivel-1(Indicar el nivel SIEMPRE)-
+-- ----------------------------------------------------------------
+CREATE TABLE empleado (
+    num_pk                  NUMBER(13),
+    nombre                  VARCHAR2(15)        NOT NULL,
+    inicial                 CHAR(1),
+    apellido_paterno        VARCHAR2(13)        NOT NULL,
+    apellido_materno        VARCHAR2(13),
+    linea_1                 VARCHAR2(50)        NOT NULL,
+    linea_2                 VARCHAR2(50),
+    urban_barrio            VARCHAR2(15),
+    ciudad                  VARCHAR2(35)        NOT NULL,
+    estado                  VARCHAR2(35)        NOT NULL,
+    zipcode                 NUMBER(5)		NOT NULL,
+    email                   VARCHAR2(35),
+	salario_mensual     NUMBER(6,2)         NOT NULL,
+CONSTRAINT empleado_num_pk 
+    PRIMARY KEY(num_pk)
+);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla pieza  nivel-1(Indicar el nivel SIEMPRE)-
+-- ----------------------------------------------------------------
+CREATE TABLE pieza (
+    codigo_pk               NUMBER(5),
+    nombre                  VARCHAR2(15)       NOT NULL,
+    cantidad                NUMBER(3)          NOT NULL,
+    descripcion             VARCHAR2(50),
+CONSTRAINT pieza_codigo_pk 
+    PRIMARY KEY(codigo_pk)
+);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla orden  nivel-2(Indicar el nivel SIEMPRE)-
+-- ----------------------------------------------------------------
+CREATE TABLE orden (
+    num_pk                  NUMBER(13),
+    fecha                   DATE                NOT NULL,
+    celular_cliente_fk      VARCHAR2(13)        NOT NULL,
+    comentario              VARCHAR2(50),
+CONSTRAINT orden_pk 
+    PRIMARY KEY(num_pk),
+CONSTRAINT orden_celular_cliente_fk 
+    FOREIGN KEY (celular_cliente_fk) 
+    REFERENCES cliente(celular_pk)
+);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla linea_detalle  nivel-3(Indicar el nivel SIEMPRE)-
+-- ----------------------------------------------------------------
+CREATE TABLE linea_detalle (
+    num_orden_pk_fk1        NUMBER(13),
+    numero_pk               NUMBER(13),
+    precio                  NUMBER(6,2)        NOT NULL,
+    cantidad                NUMBER(5)          NOT NULL,
+    comentario              VARCHAR2(50),
+	codigo_pieza_fk2    NUMBER(5),
+    codigo_bicicleta_fk3    NUMBER(5),
+CONSTRAINT linea_detalle_pk 
+    PRIMARY KEY(num_orden_pk_fk1, numero_pk),
+CONSTRAINT linea_detalle_fk1 
+    FOREIGN KEY (num_orden_pk_fk1) 
+    REFERENCES orden(num_pk),
+CONSTRAINT linea_detalle_fk2 
+    FOREIGN KEY (codigo_pieza_fk2) 
+    REFERENCES pieza(codigo_pk),
+CONSTRAINT linea_detalle_fk3 
+    FOREIGN KEY (codigo_bicicleta_fk3) 
+    REFERENCES bicicleta(codigo_pk)
+);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Insertar datos tabla: bicicleta                            -
+-- ----------------------------------------------------------------
+INSERT INTO bicicleta 
+VALUES (1001, 'Mountain Bike', 'Trek', 'X-Caliber', 'High-performance mountain bike', 500.00, 899.99, 10);
+
+INSERT INTO bicicleta 
+VALUES (1002, 'Road Bike', 'Specialized', 'Roubaix', 'Lightweight road bike for speed', 700.00, 1299.99, 15);
+
+INSERT INTO bicicleta 
+VALUES (1003, 'Hybrid Bike', 'Giant', 'Escape', 'Versatile hybrid bike for city and trail', 450.00, 799.99, 12);
+
+INSERT INTO bicicleta 
+VALUES (1004, 'BMX Bike', 'Haro', 'Freestyler', 'Sturdy BMX bike for tricks and jumps', 300.00, 499.99, 8);
+
+INSERT INTO bicicleta 
+VALUES (1005, 'Cruiser Bike', 'Schwinn', 'Classic Cruiser', 'Comfortable cruiser bike for leisure rides', 250.00, 449.99, 20);
+
+INSERT INTO bicicleta 
+VALUES (1006, 'Electric Bike', 'Rad Power Bikes', 'RadRunner', 'E-bike with electric assistance', 800.00, 1499.99, 5);
+
+INSERT INTO bicicleta 
+VALUES (1007, 'Folding Bike', 'Dahon', 'Mariner D8', 'Compact folding bike for easy storage', 600.00, 999.99, 7);
+
+INSERT INTO bicicleta 
+VALUES (1008, 'Gravel Bike', 'Cannondale', 'Topstone', 'Versatile gravel bike for all-terrain', 900.00, 1599.99, 9);
+
+INSERT INTO bicicleta 
+VALUES (1009, 'Kids Bike', 'Strider', '12 Sport', 'Balance bike for young riders', 100.00, 199.99, 25);
+
+INSERT INTO bicicleta 
+VALUES (1010, 'Triathlon Bike', 'Cervelo', 'P-Series', 'Aero bike for triathlons and time trials', 1200.00, 1999.99, 6);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Insertar datos tabla: cliente                              -
+-- ----------------------------------------------------------------
+INSERT INTO cliente 
+VALUES ('3038825606', 'Bernelle', 'B', 'Hawyes', 'Lomaz', '2503 Vahlen Junction', '16th Floor', 'La Esperanza', 'Denver', 'Colorado', 80270, 'blomaz1@sitemeter.com');
+
+INSERT INTO cliente 
+VALUES ('3046495477', 'Linn', 'F', 'Godly', 'Lelievre', '36387 Dottie Lane', 'Room 847', 'Santa Rosa', 'Huntington', 'West Virginia', 25709, 'llelievre5@cbslocal.com');
+
+INSERT INTO cliente 
+VALUES ('6122116068', 'Lyman', 'A', 'Devereu', 'Gahan', '68 Homewood Trail', 'PO Box 45069', 'Los Pinos', 'Minneapolis', 'Minnesota', 55417, 'lgahan0@ning.com');
+
+INSERT INTO cliente 
+VALUES ('6825052144', 'Channa', 'C', 'Morena', 'Ambrogioni', '24828 Springview Street', 'PO Box 19151', 'Villa del Sol', 'Fort Worth', 'Texas', 76178, 'cambrogioni2@angelfire.com');
+
+INSERT INTO cliente 
+VALUES ('7049780749', 'Logan', 'I', 'Brill', 'Pimme', '49949 Holy Cross Place', '1st Floor', 'Los Alamos', 'Charlotte', 'North Carolina', 28289, 'lpimme8@biglobe.ne.jp');
+
+INSERT INTO cliente 
+VALUES ('7193642604', 'Boyd', 'J', 'Schuricht', 'Bussel', '1 Northridge Drive', '6th Floor', 'San Francisco', 'Colorado Springs', 'Colorado', 80995, 'bbussel9@lulu.com');
+
+INSERT INTO cliente 
+VALUES ('9091694321', 'Nelia', 'H', 'Meric', 'Giamuzzo', '5014 Pond Center', '7th Floor', 'La Floresta', 'San Bernardino', 'California', 92410, 'ngiamuzzo7@ibm.com');
+
+INSERT INTO cliente 
+VALUES ('9131634684', 'Mart', 'E', 'Rake', 'Borleace', '697 Judy Court', '13th Floor', 'San Isidro', 'Shawnee Mission', 'Kansas', 66220, 'mborleace4@guardian.co.uk');
+
+INSERT INTO cliente 
+VALUES ('9371261485', 'Violante', 'D', 'Border', 'Churchman', '568 Blaine Hill', 'Room 1890', 'El Bosque', 'Dayton', 'Ohio', 45403, 'vchurchman3@deliciousdays.com');
+
+INSERT INTO cliente 
+VALUES ('9981522394', 'Wyatt', 'G', 'Matijasevic', 'Crate', '5948 Carpenter Lane', 'Apt 1953', 'El Paraíso', 'Boise', 'Idaho', 83716, 'wcrate6@ted.com');
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Insertar datos tabla: empleado                             -
+-- ----------------------------------------------------------------
+INSERT INTO empleado 
+VALUES (18447, 'John', 'J', 'Doe', 'Swart', '123 Main St', 'Apt 4B', 'Downtown', 'Cityville', 'StateA', 12345, 'john.doe@email.com', 1000);
+
+INSERT INTO empleado 
+VALUES (29183, 'Alice', 'A', 'Smith', 'Lord', '456 Oak St', NULL, 'Suburbia', 'Townsville', 'StateB', 54321, 'alice.smith@email.com', 1500);
+
+INSERT INTO empleado 
+VALUES (33838, 'Nob', 'B', 'Johnson', 'Baki', '789 Pine St', 'Unit 7', 'Uptown', 'Villageton', 'StateC', 67890, 'bob.johnson@email.com', 1500);
+
+INSERT INTO empleado 
+VALUES (49494, 'Catherine', 'C', 'Miller', 'Gabe','101 Elm St', NULL, 'Outskirts', 'Ruraltown', 'StateD', 13579, 'catherine.miller@email.com', 1700);
+
+INSERT INTO empleado 
+VALUES (50193, 'David', 'D', 'Brown', 'Villegas','202 Birch St', 'Apt 12', 'Hillside', 'Mountainville', 'StateE', 98765, 'david.brown@email.com', 2800);
+
+INSERT INTO empleado 
+VALUES (67462, 'Emily', 'E', 'Wilson', 'Cruz', '303 Cedar St', NULL, 'Village Center', 'Smalltown', 'StateF', 24680, 'emily.wilson@email.com', 1000);
+
+INSERT INTO empleado 
+VALUES (747472, 'Frank', 'F', 'Taylor', 'Castro', '404 Maple St', 'Unit 5', 'Downtown', 'Cityburg', 'StateG', 11223, 'frank.taylor@email.com', 1500);
+
+INSERT INTO empleado 
+VALUES (847373, 'Grace', 'G', 'Davis', 'Ortiz', '505 Walnut St', NULL, 'Countryside', 'Ruralburg', 'StateH', 33445, 'grace.davis@email.com', 1500);
+
+INSERT INTO empleado 
+VALUES (959272, 'Henry', 'H', 'Anderson', 'Perez', '606 Oak St', 'Suite 3', 'Suburbia', 'Townsville', 'StateI', 55667, 'henry.anderson@email.com', 1700);
+
+INSERT INTO empleado 
+VALUES (999958, 'Isabel', 'I', 'White', 'Lorenz', '707 Pine St', NULL, 'Uptown', 'Villageton', 'StateJ', 77889, 'isabel.white@email.com', 2800);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Insertar datos tabla: pieza                             -
+-- ----------------------------------------------------------------
+INSERT INTO pieza 
+VALUES (10001, 'Bolt', 50, 'Steel bolt for construction');
+
+INSERT INTO pieza 
+VALUES (10002, 'Nut', 100, 'Metal nut for fastening');
+
+INSERT INTO pieza 
+VALUES (10003, 'Spring', 75, 'Coil spring for mechanical applications');
+
+INSERT INTO pieza 
+VALUES (10004, 'Screw', 120, 'Metal screw for various uses');
+
+INSERT INTO pieza 
+VALUES (10005, 'Washer', 90, 'Flat washer for securing bolts');
+
+INSERT INTO pieza 
+VALUES (10006, 'Circuit', 30, 'Electrical circuit component');
+
+INSERT INTO pieza 
+VALUES (10007, 'Gear', 60, 'Mechanical gear for machinery');
+
+INSERT INTO pieza 
+VALUES (10008, 'Connector', 40, 'Electrical connector');
+
+INSERT INTO pieza 
+VALUES (10009, 'Pipe', 25, 'Metal pipe for plumbing');
+
+INSERT INTO pieza 
+VALUES (10010, 'Switch', 50, 'Electrical switch for devices');
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Insertar datos tabla: orden                               -
+-- ----------------------------------------------------------------
+INSERT INTO orden 
+VALUES (1000, TO_DATE('2023-11-17', 'YYYY-MM-DD'), '3038825606', 'Order for Bernelle Hawyes');
+
+INSERT INTO orden 
+VALUES (1001, TO_DATE('2023-11-17', 'YYYY-MM-DD'), '3046495477', 'Order for Linn Godly');
+
+INSERT INTO orden 
+VALUES (1002, TO_DATE('2023-11-17', 'YYYY-MM-DD'), '6122116068', 'Order for Lyman Devereu');
+
+INSERT INTO orden 
+VALUES (1003, TO_DATE('2023-11-17', 'YYYY-MM-DD'), '6825052144', 'Order for Channa Morena');
+
+INSERT INTO orden 
+VALUES (1004, TO_DATE('2023-11-17', 'YYYY-MM-DD'), '7049780749', 'Order for Logan Brill');
+
+INSERT INTO orden 
+VALUES (1005, TO_DATE('2023-11-17', 'YYYY-MM-DD'), '7193642604', 'Order for Boyd Schuricht');
+
+INSERT INTO orden 
+VALUES (1006, TO_DATE('2023-11-17', 'YYYY-MM-DD'), '9091694321', 'Order for Nelia Meric');
+
+INSERT INTO orden 
+VALUES (1007, TO_DATE('2023-11-17', 'YYYY-MM-DD'), '9131634684', 'Order for Mart Rake');
+
+INSERT INTO orden 
+VALUES (1008, TO_DATE('2023-11-17', 'YYYY-MM-DD'), '9371261485', 'Order for Violante Border');
+
+INSERT INTO orden 
+VALUES (1009, TO_DATE('2023-11-17', 'YYYY-MM-DD'), '9981522394', 'Order for Wyatt Matijasevic');
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Insertar datos tabla: linea_detalle                       -
+-- ----------------------------------------------------------------
+INSERT INTO linea_detalle 
+VALUES (1000, 1, 899.99, 2, 'High-performance mountain bike', 10001, NULL);
+
+INSERT INTO linea_detalle 
+VALUES (1001, 2, 1299.99, 1, 'Lightweight road bike for speed', 10002, NULL);
+
+INSERT INTO linea_detalle 
+VALUES (1002, 3, 799.99, 3, 'Versatile hybrid bike for city and trail', NULL, 1002);
+
+INSERT INTO linea_detalle 
+VALUES (1003, 4, 499.99, 2, 'Sturdy BMX bike for tricks and jumps', 10004, NULL);
+
+INSERT INTO linea_detalle 
+VALUES (1004, 5, 449.99, 4, 'Comfortable cruiser bike for leisure rides', NULL, 1005);
+
+INSERT INTO linea_detalle 
+VALUES (1005, 6, 1499.99, 1, 'E-bike with electric assistance', 10006, NULL);
+
+INSERT INTO linea_detalle 
+VALUES (1006, 7, 999.99, 2, 'Compact folding bike for easy storage', 10007, NULL);
+
+INSERT INTO linea_detalle 
+VALUES (1007, 8, 1599.99, 2, 'Versatile gravel bike for all-terrain', 10008, NULL);
+
+INSERT INTO linea_detalle 
+VALUES (1008, 9, 199.99, 5, 'Balance bike for young riders', 10009, NULL);
+
+INSERT INTO linea_detalle 
+VALUES (1009, 10, 1999.99, 3, 'Aero bike for triathlons and time trials', NULL, 1003);

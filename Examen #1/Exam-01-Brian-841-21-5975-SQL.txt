@@ -1,0 +1,384 @@
+-- ----------------------------------------------------------------
+-- -   Author     : Brian J. Cruz                                 -
+-- -   Num.Est    : 841-21-5975                                   -
+-- -   Curso      : SICI-4030                                     -
+-- -   Sección    : LJ1                                           -
+-- -   Source     : ExamenPractico-1X-FORMATO-2023.sql            -
+-- -   Comentario : Este script es para el examen #1              -
+-- ----------------------------------------------------------------
+-- ----------------------------------------------------------------
+-- -  EL SET ECHO ON permite ver la corrida en pantalla.         -
+-- ----------------------------------------------------------------
+SET ECHO ON
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Aquí se borran las tablas en caso de tener que volver a   -
+-- -  crearlas, esta sub dividido por niveles.                    -
+-- ----------------------------------------------------------------
+ -- Aquí van todas las tablas de nivel 3
+DROP TABLE articulo;
+DROP TABLE venta; 
+-- Aquí van todas las tablas de nivel 2
+DROP TABLE cuenta;
+-- Aquí van todas las tablas de nivel 1
+DROP TABLE categoria;
+DROP TABLE localizacion;
+DROP TABLE persona;
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla persona nivel-1 (Indicar el nivel SIEMPRE)                       -
+-- ----------------------------------------------------------------
+CREATE TABLE persona (
+    celular_pk        NUMBER(10),
+    nombre            VARCHAR2(25)   NOT NULL,
+    inicial           CHAR(1),
+    apellido_paterno  VARCHAR2(25)   NOT NULL,
+    apellido_materno  VARCHAR2(25),
+    linea_1           VARCHAR2(30)   NOT NULL,
+    linea_2           VARCHAR2(30),
+    ciudad            VARCHAR2(30)   NOT NULL,
+    pais              VARCHAR2(30)   NOT NULL,
+    zipcode           NUMBER(5)      NOT NULL,
+    genero            CHAR(1)        NOT NULL,
+    fecha_nacimiento  DATE           NOT NULL,      
+    email             VARCHAR(35),
+    CONSTRAINT persona_pk
+        PRIMARY KEY (celular_pk)
+);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ------------------------------------------------------------------
+-- -   Creacion tabla localizacion nivel-1(Indicar el nivel SIEMPRE)-
+-- ------------------------------------------------------------------
+CREATE TABLE localizacion (
+    id_pk             NUMBER(6),
+    linea_1           VARCHAR2(30)   NOT NULL,
+    linea_2           VARCHAR2(30),
+    ciudad            VARCHAR2(30)   NOT NULL,
+    pais              VARCHAR2(30)   NOT NULL,
+    zipcode           NUMBER(6)      NOT NULL,
+    coordenadas       VARCHAR2(30)   NOT NULL,
+    comentario        VARCHAR(50),
+    CONSTRAINT localizacion_pk
+        PRIMARY KEY (id_pk)
+);
+
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ------------------------------------------------------------------
+-- -   Creacion tabla categoria    nivel-1(Indicar el nivel SIEMPRE)-
+-- ------------------------------------------------------------------
+CREATE TABLE categoria (
+    id_pk             NUMBER(6),
+    titulo            VARCHAR(35),
+    comentario	      VARCHAR (50),
+	CONSTRAINT categoria_pk
+        PRIMARY KEY (id_pk)
+);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla cuenta  nivel-2   (Indicar el nivel SIEMPRE)-
+-- ----------------------------------------------------------------
+CREATE TABLE cuenta (
+	id_pk               VARCHAR2(50),
+	celular_persona_fk  NUMBER(10)      NOT NULL,
+	nombre              VARCHAR2(12)    NOT NULL,
+	password            VARCHAR2(50)    NOT NULL,
+	fecha_acceso        DATE            NOT NULL,
+	intentos            INT             NOT NULL,
+	fecha_exp           DATE            NOT NULL,
+	tipo                VARCHAR2(1)     NOT NULL,
+    CONSTRAINT cuenta_pk
+        PRIMARY KEY (id_pk),
+    CONSTRAINT cuenta_fk
+        FOREIGN KEY (celular_persona_fk)
+		REFERENCES persona(celular_pk)
+);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla venta  nivel-3   (Indicar el nivel SIEMPRE)-
+-- ----------------------------------------------------------------
+CREATE TABLE venta (
+    celular_persona_pk_fk1     NUMBER(10),
+	id_localizacion_pk_fk2     NUMBER(6),
+    CONSTRAINT venta_pk 
+        PRIMARY KEY (celular_persona_pk_fk1, id_localizacion_pk_fk2),
+    CONSTRAINT venta_fk1
+        FOREIGN KEY (celular_persona_pk_fk1) 
+        REFERENCES persona(celular_pk),
+    CONSTRAINT venta_fk2
+        FOREIGN KEY (id_localizacion_pk_fk2)
+		REFERENCES localizacion(id_pk)
+);
+
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla articulo  nivel-3   (Indicar el nivel SIEMPRE)-
+-- ----------------------------------------------------------------
+CREATE TABLE articulo (
+    id_cuenta_pk_fk1     VARCHAR2(50),
+	id_pk                NUMBER(6),
+	id_categoria_fk2     NUMBER(6),
+	id_localizacion_fk3  NUMBER(6),
+	nombre               VARCHAR2(30),
+	cantidad             NUMBER(3),
+	precio               NUMBER(4,2),
+    CONSTRAINT articulo_pk_fk1 
+        PRIMARY KEY (id_cuenta_pk_fk1, id_pk),
+    CONSTRAINT articulo_fk2 
+        FOREIGN KEY (id_categoria_fk2) 
+        REFERENCES categoria(id_pk),
+    CONSTRAINT articulo_fk3 
+        FOREIGN KEY (id_localizacion_fk3) 
+        REFERENCES localizacion(id_pk)
+);
+
+
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Insertar datos tabla: persona                             -
+-- ----------------------------------------------------------------
+INSERT INTO persona (celular_pk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, ciudad, pais, zipcode, genero, fecha_nacimiento, email)
+VALUES (7138354623, 'Blinnie', 'P', 'Mallan', 'Plenty', '9088 Killdeer Street', 'Suite 41', 'Ciudad Bolívar', 'Venezuela', '1245', 'M', TO_DATE('1923-05-12', 'YYYY-MM-DD'), 'bplenty0@census.gov');
+
+INSERT INTO persona (celular_pk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, ciudad, pais, zipcode, genero, fecha_nacimiento, email)
+VALUES (4897699024, 'Tadio', 'R', 'Tuminelli', 'Eidler', '3 Killdeer Crossing', '20th Floor', 'Ampatuan', 'Philippines', '9609', 'M', TO_DATE('1961-03-11', 'YYYY-MM-DD'), 'teidler1@samsung.com');
+
+INSERT INTO persona (celular_pk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, ciudad, pais, zipcode, genero, fecha_nacimiento, email)
+VALUES (8815206956, 'Paola', 'X', 'Patterfield', 'Tetlow', '44172 Briar Crest Court', '19th Floor', 'Chayuan', 'China', '1345', 'M', TO_DATE('1936-02-01', 'YYYY-MM-DD'), 'ptetlow2@nasa.gov');
+
+INSERT INTO persona (celular_pk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, ciudad, pais, zipcode, genero, fecha_nacimiento, email)
+VALUES (5745478536, 'Rafaellle', 'I', 'Bedin', 'Pehrsson', '95627 Cottonwood Way', 'Suite 38', 'Kout na Šumavě', 'Czech Republic', '34505', 'M', TO_DATE('1995-05-31', 'YYYY-MM-DD'), 'rpehrsson3@sciencedirect.com');
+
+INSERT INTO persona (celular_pk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, ciudad, pais, zipcode, genero, fecha_nacimiento, email)
+VALUES (5306113773, 'Arnuad', 'X', 'Langstone', 'Jeanet', '54740 Tomscot Crossing', 'Apt 1421', 'Sacramento', 'United States', '95818', 'M', TO_DATE('1932-03-29', 'YYYY-MM-DD'), 'ajeanet4@joomla.org');
+
+INSERT INTO persona (celular_pk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, ciudad, pais, zipcode, genero, fecha_nacimiento, email)
+VALUES (8367536202, 'Danya', 'C', 'Mault', 'Plampin', '812 Vahlen Circle', '3rd Floor', 'Campina Grande', 'Brazil', '58100', 'F', TO_DATE('1966-05-17', 'YYYY-MM-DD'), 'dplampin5@noaa.gov');
+
+INSERT INTO persona (celular_pk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, ciudad, pais, zipcode, genero, fecha_nacimiento, email)
+VALUES (8524183802, 'Harv', 'Y', 'Gove', 'Stummeyer', '17 Kropf Plaza', '20th Floor', 'Limón', 'Costa Rica', '70101', 'F', TO_DATE('1953-02-12', 'YYYY-MM-DD'), 'hstummeyer6@indiatimes.com');
+
+INSERT INTO persona (celular_pk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, ciudad, pais, zipcode, genero, fecha_nacimiento, email)
+VALUES (8893420685, 'Gustaf', 'H', 'Tesauro', 'Neve', '39616 Lien Street', 'Suite 15', 'Xialaxiu', 'China', '24521', 'M', TO_DATE('1985-05-23', 'YYYY-MM-DD'), 'gneve7@histats.com');
+
+INSERT INTO persona (celular_pk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, ciudad, pais, zipcode, genero, fecha_nacimiento, email)
+VALUES (2969608284, 'Bernetta', 'L', 'Heazel', 'Escoffier', '01129 Lawn Park', 'Suite 87', 'Gayamsari', 'Indonesia', '13432', 'M', TO_DATE('1937-10-18', 'YYYY-MM-DD'), 'bescoffier8@flickr.com');
+
+INSERT INTO persona (celular_pk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, ciudad, pais, zipcode, genero, fecha_nacimiento, email)
+VALUES (8381738203, 'Marsh', 'F', 'Leaman', 'Yuryatin', '26223 Commercial Hill', 'Suite 65', 'Dayang', 'China', '22456', 'F', TO_DATE('1953-05-23', 'YYYY-MM-DD'), 'myuryatin9@liveinternet.ru');
+
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Datos de la tabla localizacion                                 -
+-- ----------------------------------------------------------------
+INSERT INTO localizacion (id_pk, linea_1, linea_2, ciudad, pais, zipcode, coordenadas, comentario)
+VALUES (1, '5 Di Loreto Lane', '13th Floor', 'Dawu', 'China', 546079, '664712806', 'Impresionante');
+
+INSERT INTO localizacion (id_pk, linea_1, linea_2, ciudad, pais, zipcode, coordenadas, comentario)
+VALUES (2, '42 Orin Terrace', 'Room 99', 'Vargem Grande Paulista', 'Brazil', 546079, '435063843', 'Espectacular');
+
+INSERT INTO localizacion (id_pk, linea_1, linea_2, ciudad, pais, zipcode, coordenadas, comentario)
+VALUES (3, '1415 Myrtle Drive', 'Room 844', 'Abomey-Calavi', 'Benin', 546079, '283356629', 'Brillante');
+
+INSERT INTO localizacion (id_pk, linea_1, linea_2, ciudad, pais, zipcode, coordenadas, comentario)
+VALUES (4, '266 Kipling Parkway', 'Suite 82', 'Ábrego', 'Colombia', 546079, '190750276', 'Fascinante');
+
+INSERT INTO localizacion (id_pk, linea_1, linea_2, ciudad, pais, zipcode, coordenadas, comentario)
+VALUES (5, '211 Comanche Center', '12th Floor', 'Rio Real', 'Brazil', 48330, '388665673', 'Excelente');
+
+INSERT INTO localizacion (id_pk, linea_1, linea_2, ciudad, pais, zipcode, coordenadas, comentario)
+VALUES (6, '563 Chinook Court', 'Apt 204', 'Paris 15', 'France', 546079, '586516954', 'Excelente');
+
+INSERT INTO localizacion (id_pk, linea_1, linea_2, ciudad, pais, zipcode, coordenadas, comentario)
+VALUES (7, '0050 Delaware Circle', '19th Floor', 'Qimantage', 'China', 546079, '960306717', 'Fantástico');
+
+INSERT INTO localizacion (id_pk, linea_1, linea_2, ciudad, pais, zipcode, coordenadas, comentario)
+VALUES (8, '6 Claremont Crossing', 'Apt 1325', 'sjsm', 'Vietnam', 546079, '472694989', 'Increíble');
+
+INSERT INTO localizacion (id_pk, linea_1, linea_2, ciudad, pais, zipcode, coordenadas, comentario)
+VALUES (9, '6 Fallview Avenue', 'PO Box 96038', 'Yinchuan', 'China', 546079, '742675287', 'Fantástico');
+
+INSERT INTO localizacion (id_pk, linea_1, linea_2, ciudad, pais, zipcode, coordenadas, comentario)
+VALUES (10, '45060 School Junction', 'Suite 69', 'Akriní', 'Greece', 546079, '940951366', 'Impresionante');
+
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Datos de la tabla categoria                                -
+-- ----------------------------------------------------------------
+INSERT INTO categoria (id_pk, titulo, comentario)
+VALUES (1, 'decoracion', NULL);
+
+INSERT INTO categoria (id_pk, titulo, comentario)
+VALUES (2, 'cocina', NULL);
+
+INSERT INTO categoria (id_pk, titulo, comentario)
+VALUES (3, 'accesorios', 'A mitad de precio');
+
+INSERT INTO categoria (id_pk, titulo, comentario)
+VALUES (4, 'ropa', NULL);
+
+INSERT INTO categoria (id_pk, titulo, comentario)
+VALUES (5, 'exterior', '50 porciento de descuento');
+
+INSERT INTO categoria (id_pk, titulo, comentario)
+VALUES (6, 'entretenimiento', NULL);
+
+INSERT INTO categoria (id_pk, titulo, comentario)
+VALUES (7, 'electronicos', NULL);
+
+INSERT INTO categoria (id_pk, titulo, comentario)
+VALUES (8, 'regalos', 'Nuevos artículos disponibles');
+
+INSERT INTO categoria (id_pk, titulo, comentario)
+VALUES (9, 'muebles', NULL);
+
+INSERT INTO categoria (id_pk, titulo, comentario)
+VALUES (10, 'belleza', NULL);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Datos de la tabla cuenta                                   -
+-- ----------------------------------------------------------------
+INSERT INTO cuenta (id_pk, celular_persona_fk, nombre, password, fecha_acceso, intentos, fecha_exp, tipo)
+VALUES ('432089', '7138354623', 'alexanderle1', 'gP6`1N"oucV_', TO_DATE('3/25/2023', 'MM/DD/YYYY'), 16, TO_DATE('8/7/2028', 'MM/DD/YYYY'), 'A');
+
+INSERT INTO cuenta (id_pk, celular_persona_fk, nombre, password, fecha_acceso, intentos, fecha_exp, tipo)
+VALUES ('116594', '4897699024', 'emilythomas', 'pG4$\bmV#', TO_DATE('2/3/2023', 'MM/DD/YYYY'), 4, TO_DATE('9/8/2027', 'MM/DD/YYYY'), 'U');
+
+INSERT INTO cuenta (id_pk, celular_persona_fk, nombre, password, fecha_acceso, intentos, fecha_exp, tipo)
+VALUES ('661376', '8815206956', 'sophiawalker', 'nM8|*7G9dzV2', TO_DATE('11/15/2022', 'MM/DD/YYYY'), 13, TO_DATE('5/7/2026', 'MM/DD/YYYY'), 'U');
+
+INSERT INTO cuenta (id_pk, celular_persona_fk, nombre, password, fecha_acceso, intentos, fecha_exp, tipo)
+VALUES ('322017', '5745478536', 'alexanderlee', 'cF1!"671<KJK', TO_DATE('2/21/2023', 'MM/DD/YYYY'), 1, TO_DATE('6/14/2028', 'MM/DD/YYYY'), 'A');
+
+INSERT INTO cuenta (id_pk, celular_persona_fk, nombre, password, fecha_acceso, intentos, fecha_exp, tipo)
+VALUES ('117505', '5306113773', 'davidbrown', 'wX6)1Hb1{W', TO_DATE('12/21/2022', 'MM/DD/YYYY'), 14, TO_DATE('5/1/2026', 'MM/DD/YYYY'), 'A');
+
+INSERT INTO cuenta (id_pk, celular_persona_fk, nombre, password, fecha_acceso, intentos, fecha_exp, tipo)
+VALUES ('098831', '8367536202', 'sarahwilson', 'gN1|fKqoRb~', TO_DATE('12/5/2022', 'MM/DD/YYYY'), 13, TO_DATE('9/20/2027', 'MM/DD/YYYY'), 'A');
+
+INSERT INTO cuenta (id_pk, celular_persona_fk, nombre, password, fecha_acceso, intentos, fecha_exp, tipo)
+VALUES ('402357', '8524183802', 'mikejones', 'fY1&NN,UmV8hn', TO_DATE('3/31/2023', 'MM/DD/YYYY'), 10, TO_DATE('8/18/2028', 'MM/DD/YYYY'), 'U');
+
+INSERT INTO cuenta (id_pk, celular_persona_fk, nombre, password, fecha_acceso, intentos, fecha_exp, tipo)
+VALUES ('731539', '8893420685', 'johnsmith', 'sX7@/>AcK', TO_DATE('5/2/2023', 'MM/DD/YYYY'), 10, TO_DATE('5/19/2028', 'MM/DD/YYYY'), 'U');
+
+INSERT INTO cuenta (id_pk, celular_persona_fk, nombre, password, fecha_acceso, intentos, fecha_exp, tipo)
+VALUES ('047217', '2969608284', 'alexanderlat', 'gQ3)=G$U7a', TO_DATE('3/9/2023', 'MM/DD/YYYY'), 16, TO_DATE('3/11/2026', 'MM/DD/YYYY'), 'A');
+
+INSERT INTO cuenta (id_pk, celular_persona_fk, nombre, password, fecha_acceso, intentos, fecha_exp, tipo)
+VALUES ('643812', '8381738203', 'sarahwilson2', 'iE5.ldA!', TO_DATE('8/5/2023', 'MM/DD/YYYY'), 5, TO_DATE('9/2/2028', 'MM/DD/YYYY'), 'A');
+
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Insertar datos tabla: venta                             -
+-- ----------------------------------------------------------------
+INSERT INTO venta
+    VALUES (7138354623, 1);
+INSERT INTO venta
+    VALUES (4897699024, 2);
+INSERT INTO venta
+    VALUES (8815206956, 3);
+INSERT INTO venta
+    VALUES (5745478536, 4);
+INSERT INTO venta
+    VALUES (5306113773, 5);
+INSERT INTO venta
+    VALUES (8367536202, 6);
+INSERT INTO venta
+    VALUES (8524183802, 7);
+INSERT INTO venta
+    VALUES (8893420685, 8);
+INSERT INTO venta
+    VALUES (2969608284, 9);
+INSERT INTO venta
+    VALUES (8381738203, 10);
+
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Insertar datos tabla: articulos                            -
+-- ----------------------------------------------------------------
+INSERT INTO articulo (id_cuenta_pk_fk1, id_pk, id_categoria_fk2, id_localizacion_fk3, nombre, cantidad, precio)
+VALUES (432089, 1, 1, 1, 'Alfrombra', 1, 1.24);
+
+INSERT INTO articulo (id_cuenta_pk_fk1, id_pk, id_categoria_fk2, id_localizacion_fk3, nombre, cantidad, precio)
+VALUES (116594, 2, 2, 2, 'Televisor', 2, 5.6);
+
+INSERT INTO articulo (id_cuenta_pk_fk1, id_pk, id_categoria_fk2, id_localizacion_fk3, nombre, cantidad, precio)
+VALUES (661376, 3, 3, 3, 'Lampara', 1, 6.5);
+
+INSERT INTO articulo (id_cuenta_pk_fk1, id_pk, id_categoria_fk2, id_localizacion_fk3, nombre, cantidad, precio)
+VALUES (322017, 4, 4, 4, 'Monitor', 2, 32.4);
+
+INSERT INTO articulo (id_cuenta_pk_fk1, id_pk, id_categoria_fk2, id_localizacion_fk3, nombre, cantidad, precio)
+VALUES (117505, 5, 5, 5, 'Computadora', 4, 1.8);
+
+INSERT INTO articulo (id_cuenta_pk_fk1, id_pk, id_categoria_fk2, id_localizacion_fk3, nombre, cantidad, precio)
+VALUES (98831, 6, 6, 6, 'Mouse', 3, 2.3);
+
+INSERT INTO articulo (id_cuenta_pk_fk1, id_pk, id_categoria_fk2, id_localizacion_fk3, nombre, cantidad, precio)
+VALUES (402357, 7, 7, 7, 'Teclado', 5, 9.8);
+
+INSERT INTO articulo (id_cuenta_pk_fk1, id_pk, id_categoria_fk2, id_localizacion_fk3, nombre, cantidad, precio)
+VALUES (731539, 8, 8, 8, 'Lápiz', 5, 1.9);
+
+INSERT INTO articulo (id_cuenta_pk_fk1, id_pk, id_categoria_fk2, id_localizacion_fk3, nombre, cantidad, precio)
+VALUES (47217, 9, 9, 9, 'Zapatos', 6, 2.10);
+
+INSERT INTO articulo (id_cuenta_pk_fk1, id_pk, id_categoria_fk2, id_localizacion_fk3, nombre, cantidad, precio)
+VALUES (643812, 10, 10, 10, 'Camisa', 7, 3.11);
+-- ----------------------------------------------------------------
+-- -   Guarda los datos. De no ponerse, como quiera los guarda   -
+-- - en una corrida.  Se deja para explicar su uso.             -
+-- ----------------------------------------------------------------
+COMMIT;

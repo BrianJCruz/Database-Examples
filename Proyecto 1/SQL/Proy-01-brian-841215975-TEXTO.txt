@@ -1,0 +1,110 @@
+DROP TABLE seguidor;
+DROP TABLE coleccion;
+DROP TABLE comic;
+DROP TABLE compania;
+DROP TABLE coleccionista;
+
+REM *******************************************************************************
+REM *                              ENTIDADES                                      *
+REM *******************************************************************************
+
+-- Usuario principal, busca coleccionar y/o comprar comics
+CREATE TABLE coleccionista(
+        id_pk                   NUMBER(6),
+        apellido_paterno        VARCHAR2(15)        NOT NULL,
+        apellido_materno        VARCHAR2(15),
+        nombre                  VARCHAR2(15)        NOT NULL,
+        inicial                 VARCHAR2(1),
+        linea_1                 VARCHAR2(50)        NOT NULL,
+        linea_2                 VARCHAR2(50),
+        ciudad                  VARCHAR2(15)        NOT NULL,
+        pais                    VARCHAR2(15)        NOT NULL,
+        codigo_postal           VARCHAR2(5)         NOT NULL,
+        correo_electronico      VARCHAR2(50)        NOT NULL UNIQUE,
+        celular                 VARCHAR2(10),
+        CONSTRAINT coleccionista_id_pk
+            PRIMARY KEY (id_pk)
+);
+-- Companias que crean comics como DC, Marvel...
+CREATE TABLE compania(
+        id_pk                   NUMBER(8),
+        nombre                  VARCHAR2(15)        NOT NULL,
+        linea_1                 VARCHAR2(50)        NOT NULL,
+        linea_2                 VARCHAR2(50),
+        ciudad                  VARCHAR2(15)        NOT NULL,
+        pais                    VARCHAR2(15)        NOT NULL,
+        codigo_postal           VARCHAR2(5)         NOT NULL,
+        telefono                VARCHAR2(10),
+        CONSTRAINT compania_codigo_pk
+            PRIMARY KEY (id_pk)    
+);
+-- Lista de todos los comics que pueden ser identificados
+CREATE TABLE comic(
+        codigo_pk               NUMBER(8),
+        compania_id_fk          NUMBER(8)            NOT NULL,
+        titulo                  VARCHAR2(30)         NOT NULL,
+        numero                  NUMBER(4)            NOT NULL,
+        valor                   NUMBER(4,2),
+		CONSTRAINT comic_codigo_pk
+            PRIMARY KEY (codigo_pk),
+		CONSTRAINT comic_compania_id_fk
+            FOREIGN KEY (compania_id_fk)
+			REFERENCES compania(id_pk)
+);
+-- Coleccion de comics por usuario una vez registrado 
+CREATE TABLE coleccion(
+        comic_codigo_pk_fk      NUMBER(8),
+		coleccionista_id_pk_fk  NUMBER(8),
+		copias                  NUMBER(3)            DEFAULT 1,
+		condicion               VARCHAR2(10)         NOT NULL,
+		CONSTRAINT coleccion_pk
+            PRIMARY KEY (comic_codigo_pk_fk, coleccionista_id_pk_fk),
+		CONSTRAINT coleccion_comic_fk1
+		    FOREIGN KEY (comic_codigo_pk_fk)
+			REFERENCES comic(codigo_pk),
+		CONSTRAINT coleccion_coleccionista_fk
+		    FOREIGN KEY (coleccionista_id_pk_fk)
+			REFERENCES coleccionista(id_pk)
+);
+-- Se crea un record una vez un coleccionista siga a otro coleccionista
+CREATE TABLE seguidor(
+		coleccionista_id_pk_fk1     NUMBER(8),
+		coleccionista_id_pk_fk2     NUMBER(8),
+		CONSTRAINT seguidor_pk
+            PRIMARY KEY (coleccionista_id_pk_fk1, coleccionista_id_pk_fk2),
+		CONSTRAINT seguidor_coleccionista_fk1
+		    FOREIGN KEY (coleccionista_id_pk_fk1)
+			REFERENCES coleccionista(id_pk),
+		CONSTRAINT seguidor_fk2
+		    FOREIGN KEY (coleccionista_id_pk_fk2)
+			REFERENCES coleccionista(id_pk)
+);
+
+REM *******************************************************************************
+REM *                              INSERTACION DE DATOS                           *
+REM *******************************************************************************
+
+-- Un coleccionista se registra en la app web o celular
+INSERT INTO coleccionista (id_pk, apellido_paterno, apellido_materno, nombre, inicial, linea_1, linea_2, ciudad, pais, codigo_postal, celular, correo_electronico)
+     VALUES (1, 'Smith', 'Johnson', 'John', 'J', '123 Main St', 'Apt 4B', 'Cityville', 'Countryland', '12345', '1234567890', 'john.smith@example.com');
+	 
+-- Otro hace lo mismo
+INSERT INTO coleccionista (id_pk, apellido_paterno, apellido_materno, nombre, inicial, linea_1, linea_2, ciudad, pais, codigo_postal, celular, correo_electronico)
+    VALUES (2, 'Carlos', 'Johnson', 'John', 'J', '123 Main St', 'Apt 4B', 'Cityville', 'Countryland', '12345', '1234567890', 'Carlos.smith@example.com');
+
+-- Una compania es creada en la base de datos
+INSERT INTO compania (id_pk, nombre, linea_1, linea_2, ciudad, pais, codigo_postal, telefono)
+    VALUES (101, 'Comic Co.', '456 Market St', 'Suite 200', 'Cityville', 'Countryland', '54321', '9876543210');
+
+-- Un comic de esa compania es insertado en dicha base de datos
+INSERT INTO comic (codigo_pk, compania_id_fk, titulo, numero, valor)
+    VALUES (1001, 101, 'Superhero Adventures', 1, 9.99);
+
+-- El coleccionista Smith registra/compra un comic y este es anadido a la coleccion
+INSERT INTO coleccion
+    VALUES (1001, 1, 25, 'Buena');
+
+-- El coleccionista Carlos comienza a seguir a Smith
+INSERT INTO seguidor
+    VALUES (2, 1);
+

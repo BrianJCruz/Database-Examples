@@ -1,0 +1,518 @@
+-- ----------------------------------------------------------------
+-- -   Author     : Brian J. Cruz Castro                          -
+-- -   Num.Est    : 841-00-0000                                   -
+-- -   Curso      : SICI-4030                                     -
+-- -   Seccion    : LJ1                                           -
+-- -   Source     : Proyecto-02-2023.sql                          -
+-- -   Comentario : Este script es para el proyecto #2            -
+-- ----------------------------------------------------------------
+-- ----------------------------------------------------------------
+-- -  EL SET ECHO ON permite ver la corrida en pantalla.         -
+-- ----------------------------------------------------------------
+SET ECHO ON
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Aquí se borran las tablas en caso de tener que volver a   -
+-- -  crearlas, esta sub dividido por niveles.                    -
+-- ----------------------------------------------------------------
+
+--Nivel 3
+DROP TABLE equipo_mantenimiento;
+DROP TABLE reserva;
+DROP TABLE transaccion;
+
+--Nivel 2
+DROP TABLE equipo;
+DROP TABLE cuenta;
+DROP TABLE cliente;
+
+--Nivel 1
+DROP TABLE mantenimiento;
+DROP TABLE lavanderia;
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla lavanderia nivel-1 (Indicar el nivel SIEMPRE)                       -
+-- ----------------------------------------------------------------
+CREATE TABLE lavanderia ( 
+   id_pk         NUMBER(8),
+   nombre        VARCHAR2(35)		NOT NULL,
+   linea_1       VARCHAR2(50)		NOT NULL,
+   linea_2       VARCHAR2(50),
+   urban_barrio  VARCHAR2(35),
+   ciudad        VARCHAR2(35)		NOT NULL,
+   estado        VARCHAR2(35)		NOT NULL,
+   zipcode       CHAR(5)            	NOT NULL,
+   telefono      NUMBER(10),
+   email         VARCHAR2(35),
+   CONSTRAINT lavanderia_id_pk 
+       PRIMARY KEY (id_pk)    
+);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla mantenimiento nivel-1(Indicar el nivel SIEMPRE)-
+-- ----------------------------------------------------------------
+CREATE TABLE mantenimiento ( 
+   id_pk         NUMBER(8),
+   hora_uso      NUMBER(8)          NOT NULL,
+   tipo          VARCHAR2(35)       NOT NULL,
+   costo         NUMBER(4,2)        NOT NULL,
+   descripcion   VARCHAR2(65)       NOT NULL,
+   CONSTRAINT mantenimiento_id_pk 
+       PRIMARY KEY (id_pk)
+);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla cliente    nivel-3(Indicar el nivel SIEMPRE)-
+-- ----------------------------------------------------------------
+CREATE TABLE cliente ( 
+   licencia_pk          NUMBER(13),
+   id_lavanderia_fk     NUMBER(8)		NOT NULL,
+   nombre               VARCHAR2(35)		NOT NULL,
+   inicial              CHAR(1),
+   apellido_paterno     VARCHAR2(35)		NOT NULL,
+   apellido_materno     VARCHAR2(35),
+   linea_1              VARCHAR2(50)		NOT NULL,
+   linea_2              VARCHAR2(50),
+   urban_barrio         VARCHAR2(35),
+   ciudad               VARCHAR2(35)		NOT NULL,
+   estado               VARCHAR2(35)		NOT NULL,
+   zipcode              CHAR(5)			NOT NULL,
+   celular              NUMBER(10),
+   email                VARCHAR2(35),
+   CONSTRAINT cliente_licencia_pk 
+       PRIMARY KEY (licencia_pk),
+   CONSTRAINT cliente_id_lavanderia_fk 
+       FOREIGN KEY (id_lavanderia_fk)
+       REFERENCES lavanderia(id_pk)
+);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla cuenta  nivel-2(Indicar el nivel SIEMPRE)-
+-- ----------------------------------------------------------------
+CREATE TABLE cuenta ( 
+   id_pk                 NUMBER(8),
+   licencia_cliente_fk   NUMBER(13)			NOT NULL,
+   nombre                VARCHAR2(35)			NOT NULL,
+   password              VARCHAR2(35)			NOT NULL,
+   fecha_acceso          DATE				NOT NULL,
+   fecha_exp 		 DATE				NOT NULL,
+   cant_acceso_fallido   NUMBER(8)			NOT NULL,
+   tipo                  VARCHAR2(35)			NOT NULL,
+   CONSTRAINT cuenta_id_pk 
+       PRIMARY KEY (id_pk),
+   CONSTRAINT cuenta_licencia_cliente_pk_fk1 
+       FOREIGN KEY (licencia_cliente_fk)
+       REFERENCES cliente(licencia_pk)
+);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla equipo   nivel-2  (Indicar el nivel SIEMPRE)-
+-- ----------------------------------------------------------------
+CREATE TABLE equipo ( 
+   num_propiedad_pk       	NUMBER(8),
+   id_lavanderia_fk       	NUMBER(8)			NOT NULL,
+   tipo                   	VARCHAR2(35)			NOT NULL,
+   fecha_compra           	DATE				NOT NULL,
+   fecha_mantenimiento    	DATE,
+   costo                  	NUMBER(4,2)			NOT NULL,
+   CONSTRAINT equipo_num_propiedad_pk 
+       PRIMARY KEY (num_propiedad_pk),
+   CONSTRAINT equipo_id_lavanderia_fk 
+       FOREIGN KEY (id_lavanderia_fk)
+       REFERENCES lavanderia(id_pk)
+);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla transaccion    nivel-3(Indicar el nivel SIEMPRE)-
+-- ----------------------------------------------------------------
+CREATE TABLE transaccion ( 
+   licencia_cliente_pk_fk1        NUMBER(13),
+   num_propiedad_equipo_pk_fk2    NUMBER(8),
+   fecha_pk                       DATE				NOT NULL,
+   hora_uso                       VARCHAR2(12)			NOT NULL,
+   tipo                           VARCHAR2(8)			NOT NULL,
+   costo                          NUMBER(4,2)                   NOT NULL,
+   CONSTRAINT transaccion_pk
+       PRIMARY KEY (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk),
+   CONSTRAINT transaccion_fk1
+       FOREIGN KEY (licencia_cliente_pk_fk1)
+       REFERENCES cliente(licencia_pk),
+   CONSTRAINT transaccion_fk2 
+       FOREIGN KEY (num_propiedad_equipo_pk_fk2)
+       REFERENCES equipo(num_propiedad_pk)
+);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla reserva    nivel-3(Indicar el nivel SIEMPRE)-
+-- ----------------------------------------------------------------
+CREATE TABLE reserva ( 
+   licencia_cliente_pk_fk1        	NUMBER(13),
+   num_propiedad_equipo_pk_fk2    	NUMBER(8),
+   fecha_pk                       	DATE				NOT NULL,
+   hora_uso                       	VARCHAR(12)			NOT NULL, 
+   tipo                           	VARCHAR2(35)		        NOT NULL,
+   CONSTRAINT reserva_pk
+       PRIMARY KEY (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk),
+   CONSTRAINT reserva_licencia_cliente_pk_fk1 
+       FOREIGN KEY (licencia_cliente_pk_fk1)
+       REFERENCES cliente(licencia_pk),
+   CONSTRAINT reserva_num_propiedad_equipo_pk_fk2 
+       FOREIGN KEY (num_propiedad_equipo_pk_fk2)
+       REFERENCES equipo(num_propiedad_pk)
+);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Creacion tabla equipo_mantenimiento  nivel-3(Indicar el nivel SIEMPRE)-
+-- ----------------------------------------------------------------
+CREATE TABLE equipo_mantenimiento ( 
+   num_propiedad_pk_fk1     		NUMBER(8),
+   id_mantenimiento_pk_fk2  		NUMBER(8),
+   fecha_pk                 		DATE				NOT NULL,
+   tipo                     		VARCHAR(35)			NOT NULL,
+   comentario               		VARCHAR2(80),
+   CONSTRAINT equipo_pk
+       PRIMARY KEY (num_propiedad_pk_fk1, id_mantenimiento_pk_fk2, fecha_pk), 
+   CONSTRAINT equipo_mantenimiento_num_propiedad_pk_fk1 
+       FOREIGN KEY (num_propiedad_pk_fk1)
+       REFERENCES equipo(num_propiedad_pk),
+   CONSTRAINT equipo_mantenimiento_id_mantenimiento_pk_fk2 
+       FOREIGN KEY (id_mantenimiento_pk_fk2)
+       REFERENCES mantenimiento(id_pk)
+);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Insertar datos tabla: Lavanderia                              -
+-- ----------------------------------------------------------------
+INSERT INTO lavanderia (id_pk, nombre, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, telefono, email)
+VALUES (19289684, 'California Clothing', '81259 Oak Junction', 'PO Box 51191', 'Downtown', 'Tucson', 'Arizona', 88742, '5203059089', 'abare0@mtv.com');
+
+INSERT INTO lavanderia (id_pk, nombre, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, telefono, email)
+VALUES (99893790, 'Lavanderia el Gracioso', '5342 Kim Crossing', 'PO Box 78128', 'Uptown', 'Migrate', 'Kentucky', 7820, '5024543359', 'kcockshoot1@sohu.com');
+
+INSERT INTO lavanderia (id_pk, nombre, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, telefono, email)
+VALUES (75282457, 'Lavanderia Pailas Viejas', '38 Sunnyside Crossing', 'Room 856', 'Midtown', 'Cape Coral', 'Florida', 65335, '2394769845', 'sbaiss2@sina.com.cn');
+
+INSERT INTO lavanderia (id_pk, nombre, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, telefono, email)
+VALUES (37005002, 'Agua Bendita', '58685 Warbler Avenue', 'PO Box 81700', 'West End', 'Miami', 'Florida', 14260, '7866338691', 'fvasilyev3@twitter.com');
+
+INSERT INTO lavanderia (id_pk, nombre, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, telefono, email)
+VALUES (92633313, 'Arizona Wash', '9416 Fairview Alley', 'Room 61', 'East Side', 'Apache Junction', 'Arizona', 20144, '4802982026', 'rwatson4@bing.com');
+
+INSERT INTO lavanderia (id_pk, nombre, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, telefono, email)
+VALUES (91709889, 'Tu Lavanderidita', '8 Briar Crest Drive', 'Suite 6', 'Northside', 'Phoenix', 'Arizona', 39505, '6027312470', 'mwathell5@umn.edu');
+
+INSERT INTO lavanderia (id_pk, nombre, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, telefono, email)
+VALUES (84325172, 'LavanderiaKQ580', '593 Leroy Way', 'Suite 70', 'Southtown', 'Raleigh', 'North Carolina', 36409, '9191353560', 'mjoinsey6@mozilla.org');
+
+INSERT INTO lavanderia (id_pk, nombre, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, telefono, email)
+VALUES (44134238, 'Lavanderia Peso del Diablo', '561 Armistice Trail', '11th Floor', 'Central District', 'Fresno', 'California', 3762, '5598601867', 'gemps7@nyu.edu');
+
+INSERT INTO lavanderia (id_pk, nombre, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, telefono, email)
+VALUES (82600585, 'Lavanderia Cannabis', '077 Miller Parkway', 'PO Box 65656', 'Riverfront', 'Chicago', 'Illinois', 23073, '3129041032', 'nbrosel8@infoseek.co.jp');
+
+INSERT INTO lavanderia (id_pk, nombre, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, telefono, email)
+VALUES (9131121, 'Lavanderia Thanos-Wash', '5803 Sachtjen Center', 'Room 1873', 'Harborview', 'Colorado Springs', 'Colorado', 2008, '7194413964', 'ehark9@biglobe.ne.jp');
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Datos de la tabla mantenimiento                                 -
+-- ----------------------------------------------------------------
+INSERT INTO mantenimiento (id_pk, hora_uso, tipo, costo, descripcion) 
+VALUES (1, 5, 'preventivo', 70.67, 'Limpieza del filtro de pelusas');
+
+INSERT INTO mantenimiento (id_pk, hora_uso, tipo, costo, descripcion) 
+VALUES (2, 5, 'correctivo', 95.70, 'Revision de la bomba de agua');
+
+INSERT INTO mantenimiento (id_pk, hora_uso, tipo, costo, descripcion) 
+VALUES (3, 4, 'predictivo', 27.38, 'Lubricacion de las partes moviles');
+
+INSERT INTO mantenimiento (id_pk, hora_uso, tipo, costo, descripcion) 
+VALUES (4, 1, 'rutinario', 31.40, 'Verificacion de la conexion electrica');
+
+INSERT INTO mantenimiento (id_pk, hora_uso, tipo, costo, descripcion) 
+VALUES (5, 0, 'programado', 11.94, 'Inspeccion de las mangueras de agua');
+
+INSERT INTO mantenimiento (id_pk, hora_uso, tipo, costo, descripcion) 
+VALUES (6, 4, 'urgente', 55.70, 'Ajuste de la correa de transmision');
+
+INSERT INTO mantenimiento (id_pk, hora_uso, tipo, costo, descripcion) 
+VALUES (7, 2, 'periodico', 30.04, 'Limpieza del tambor');
+
+INSERT INTO mantenimiento (id_pk, hora_uso, tipo, costo, descripcion) 
+VALUES (8, 5, 'preventivo anual', 61.18, 'Verificacion de los sensores de temperatura');
+
+INSERT INTO mantenimiento (id_pk, hora_uso, tipo, costo, descripcion) 
+VALUES (9, 2, 'correctivo mensual', 94.02, 'Revision de los botones y perillas');
+
+INSERT INTO mantenimiento (id_pk, hora_uso, tipo, costo, descripcion) 
+VALUES (10, 3, 'predictivo trimestral', 66.35, 'Limpieza del dispensador de detergente');
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Datos de la tabla cliente                                -
+-- ----------------------------------------------------------------
+INSERT INTO cliente (licencia_pk, id_lavanderia_fk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, celular, email)
+VALUES (2486754281307, 19289684, 'Lyman', 'A', 'Devereu', 'Gahan', '68 Homewood Trail', 'PO Box 45069', 'Los Pinos', 'Minneapolis', 'Minnesota', 55417, '6122116068', 'lgahan0@ning.com');
+
+INSERT INTO cliente (licencia_pk, id_lavanderia_fk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, celular, email)
+VALUES (1325348569905, 99893790, 'Bernelle', 'B', 'Hawyes', 'Lomaz', '2503 Vahlen Junction', '16th Floor', 'La Esperanza', 'Denver', 'Colorado', 80270, '3038825606', 'blomaz1@sitemeter.com');
+
+INSERT INTO cliente (licencia_pk, id_lavanderia_fk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, celular, email)
+VALUES (3483242990598, 75282457, 'Channa', 'C', 'Morena', 'Ambrogioni', '24828 Springview Street', 'PO Box 19151', 'Villa del Sol', 'Fort Worth', 'Texas', 76178, '6825052144', 'cambrogioni2@angelfire.com');
+
+INSERT INTO cliente (licencia_pk, id_lavanderia_fk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, celular, email)
+VALUES (7109769546037, 37005002, 'Violante', 'D', 'Border', 'Churchman', '568 Blaine Hill', 'Room 1890', 'El Bosque', 'Dayton', 'Ohio', 45403, '9371261485', 'vchurchman3@deliciousdays.com');
+
+INSERT INTO cliente (licencia_pk, id_lavanderia_fk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, celular, email)
+VALUES (8459847232444, 92633313, 'Mart', 'E', 'Rake', 'Borleace', '697 Judy Court', '13th Floor', 'San Isidro', 'Shawnee Mission', 'Kansas', 66220, '9131634684', 'mborleace4@guardian.co.uk');
+
+INSERT INTO cliente (licencia_pk, id_lavanderia_fk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, celular, email)
+VALUES (7292520357375, 91709889, 'Linn', 'F', 'Godly', 'Lelievre', '36387 Dottie Lane', 'Room 847', 'Santa Rosa', 'Huntington', 'West Virginia', 25709, '3046495477', 'llelievre5@cbslocal.com');
+
+INSERT INTO cliente (licencia_pk, id_lavanderia_fk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, celular, email)
+VALUES (9329585513159, 84325172, 'Wyatt', 'G', 'Matijasevic', 'Crate', '5948 Carpenter Lane', 'Apt 1953', 'El Paraíso', 'Boise', 'Idaho', 83716, '2081522394', 'wcrate6@ted.com');
+
+INSERT INTO cliente (licencia_pk, id_lavanderia_fk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, celular, email)
+VALUES (3104898812995, 44134238, 'Nelia', 'H', 'Meric', 'Giamuzzo', '5014 Pond Center', '7th Floor', 'La Floresta', 'San Bernardino', 'California', 92410, '9091694321', 'ngiamuzzo7@ibm.com');
+
+INSERT INTO cliente (licencia_pk, id_lavanderia_fk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, celular, email)
+VALUES (2210122461219, 82600585, 'Logan', 'I', 'Brill', 'Pimme', '49949 Holy Cross Place', '1st Floor', 'Los Alamos', 'Charlotte', 'North Carolina', 28289, '7049780749', 'lpimme8@biglobe.ne.jp');
+
+INSERT INTO cliente (licencia_pk, id_lavanderia_fk, nombre, inicial, apellido_paterno, apellido_materno, linea_1, linea_2, urban_barrio, ciudad, estado, zipcode, celular, email)
+VALUES (7051189428774, 9131121, 'Boyd', 'J', 'Schuricht', 'Bussel', '1 Northridge Drive', '6th Floor', 'San Francisco', 'Colorado Springs', 'Colorado', 80995, '7193642604', 'bbussel9@lulu.com');
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Datos de la tabla cuenta                                  -
+-- ----------------------------------------------------------------
+INSERT INTO cuenta (id_pk, licencia_cliente_fk, nombre, password, fecha_acceso, fecha_exp, cant_acceso_fallido, tipo)
+VALUES (55309, 2486754281307, 'Anallise', 'P@ssw0rd1', TO_DATE('8/11/2023', 'MM/DD/YYYY'), TO_DATE('2/22/2023', 'MM/DD/YYYY'), 8, 'U');
+
+INSERT INTO cuenta (id_pk, licencia_cliente_fk, nombre, password, fecha_acceso, fecha_exp, cant_acceso_fallido, tipo)
+VALUES (60720, 1325348569905, 'Modestia', 'Secur3P@ss', TO_DATE('4/15/2023', 'MM/DD/YYYY'), TO_DATE('7/13/2023', 'MM/DD/YYYY'), 0, 'A');
+
+INSERT INTO cuenta (id_pk, licencia_cliente_fk, nombre, password, fecha_acceso, fecha_exp, cant_acceso_fallido, tipo)
+VALUES (25141, 3483242990598, 'Christoffer', 'FakePass123', TO_DATE('12/26/2022', 'MM/DD/YYYY'), TO_DATE('4/10/2023', 'MM/DD/YYYY'), 6, 'A');
+
+INSERT INTO cuenta (id_pk, licencia_cliente_fk, nombre, password, fecha_acceso, fecha_exp, cant_acceso_fallido, tipo)
+VALUES (33377, 7109769546037, 'Kai', 'Password123!', TO_DATE('11/10/2023', 'MM/DD/YYYY'), TO_DATE('1/4/2023', 'MM/DD/YYYY'), 3, 'U');
+
+INSERT INTO cuenta (id_pk, licencia_cliente_fk, nombre, password, fecha_acceso, fecha_exp, cant_acceso_fallido, tipo)
+VALUES (15043, 8459847232444, 'Coralie', '12345678', TO_DATE('7/2/2023', 'MM/DD/YYYY'), TO_DATE('3/10/2023', 'MM/DD/YYYY'), 1, 'U');
+
+INSERT INTO cuenta (id_pk, licencia_cliente_fk, nombre, password, fecha_acceso, fecha_exp, cant_acceso_fallido, tipo)
+VALUES (86644, 7292520357375, 'Rory', 'Passw0rd!', TO_DATE('12/28/2022', 'MM/DD/YYYY'), TO_DATE('12/15/2022', 'MM/DD/YYYY'), 2, 'U');
+
+INSERT INTO cuenta (id_pk, licencia_cliente_fk, nombre, password, fecha_acceso, fecha_exp, cant_acceso_fallido, tipo)
+VALUES (50070, 9329585513159, 'Jessee', 'Secret123', TO_DATE('1/17/2023', 'MM/DD/YYYY'), TO_DATE('7/3/2023', 'MM/DD/YYYY'), 6, 'U');
+
+INSERT INTO cuenta (id_pk, licencia_cliente_fk, nombre, password, fecha_acceso, fecha_exp, cant_acceso_fallido, tipo)
+VALUES (23627, 3104898812995, 'Giacobo', 'SecurePassword', TO_DATE('11/16/2022', 'MM/DD/YYYY'), TO_DATE('7/14/2023', 'MM/DD/YYYY'), 8, 'A');
+
+INSERT INTO cuenta (id_pk, licencia_cliente_fk, nombre, password, fecha_acceso, fecha_exp, cant_acceso_fallido, tipo)
+VALUES (45198, 2210122461219, 'Tobye', 'Pa$$w0rd', TO_DATE('1/5/2023', 'MM/DD/YYYY'), TO_DATE('4/11/2023', 'MM/DD/YYYY'), 9, 'A');
+
+INSERT INTO cuenta (id_pk, licencia_cliente_fk, nombre, password, fecha_acceso, fecha_exp, cant_acceso_fallido, tipo)
+VALUES (74903, 7051189428774, 'Berne', 'P@ssword!', TO_DATE('4/17/2023', 'MM/DD/YYYY'), TO_DATE('4/15/2023', 'MM/DD/YYYY'), 5, 'A');
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Datos de la tabla equipo                                -
+-- ----------------------------------------------------------------
+INSERT INTO equipo (num_propiedad_pk, id_lavanderia_fk, tipo, fecha_compra, fecha_mantenimiento, costo)
+VALUES (54279, 19289684, 'secadora', TO_DATE('7/13/2021', 'MM/DD/YYYY'), TO_DATE('2/13/2022', 'MM/DD/YYYY'), 20.67);
+
+INSERT INTO equipo (num_propiedad_pk, id_lavanderia_fk, tipo, fecha_compra, fecha_mantenimiento, costo)
+VALUES (14340, 99893790, 'secadora', TO_DATE('7/7/2021', 'MM/DD/YYYY'), TO_DATE('4/7/2022', 'MM/DD/YYYY'), 17.02);
+
+INSERT INTO equipo (num_propiedad_pk, id_lavanderia_fk, tipo, fecha_compra, fecha_mantenimiento, costo)
+VALUES (4860, 75282457, 'secadora', TO_DATE('9/3/2021', 'MM/DD/YYYY'), TO_DATE('6/11/2022', 'MM/DD/YYYY'), 72.10);
+
+INSERT INTO equipo (num_propiedad_pk, id_lavanderia_fk, tipo, fecha_compra, fecha_mantenimiento, costo)
+VALUES (51474, 37005002, 'lavadora', TO_DATE('8/25/2021', 'MM/DD/YYYY'), TO_DATE('5/11/2022', 'MM/DD/YYYY'), 89.77);
+
+INSERT INTO equipo (num_propiedad_pk, id_lavanderia_fk, tipo, fecha_compra, fecha_mantenimiento, costo)
+VALUES (74910, 92633313, 'lavadora', TO_DATE('10/15/2021', 'MM/DD/YYYY'), TO_DATE('9/21/2022', 'MM/DD/YYYY'), 40.07);
+
+INSERT INTO equipo (num_propiedad_pk, id_lavanderia_fk, tipo, fecha_compra, fecha_mantenimiento, costo)
+VALUES (19273, 91709889, 'secadora', TO_DATE('2/11/2021', 'MM/DD/YYYY'), TO_DATE('8/6/2022', 'MM/DD/YYYY'), 61.49);
+
+INSERT INTO equipo (num_propiedad_pk, id_lavanderia_fk, tipo, fecha_compra, fecha_mantenimiento, costo)
+VALUES (96979, 84325172, 'lavadora', TO_DATE('10/29/2021', 'MM/DD/YYYY'), TO_DATE('4/11/2022', 'MM/DD/YYYY'), 95.85);
+
+INSERT INTO equipo (num_propiedad_pk, id_lavanderia_fk, tipo, fecha_compra, fecha_mantenimiento, costo)
+VALUES (77718, 44134238, 'lavadora', TO_DATE('7/19/2021', 'MM/DD/YYYY'), TO_DATE('3/21/2022', 'MM/DD/YYYY'), 97.33);
+
+INSERT INTO equipo (num_propiedad_pk, id_lavanderia_fk, tipo, fecha_compra, fecha_mantenimiento, costo)
+VALUES (97788, 82600585, 'lavadora', TO_DATE('2/1/2021', 'MM/DD/YYYY'), TO_DATE('3/3/2022', 'MM/DD/YYYY'), 1.60);
+
+INSERT INTO equipo (num_propiedad_pk, id_lavanderia_fk, tipo, fecha_compra, fecha_mantenimiento, costo)
+VALUES (49420, 9131121, 'lavadora', TO_DATE('3/24/2021', 'MM/DD/YYYY'), TO_DATE('7/19/2022', 'MM/DD/YYYY'), 47.93);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Datos de la tabla transaccion                                  -
+-- ----------------------------------------------------------------
+INSERT INTO transaccion (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo, costo)
+VALUES (2486754281307, 54279, TO_DATE('10/26/2023', 'MM/DD/YYYY'), '12:34:56 PM', 'secadora', 10.86);
+
+INSERT INTO transaccion (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo, costo)
+VALUES (1325348569905, 14340, TO_DATE('6/18/2022', 'MM/DD/YYYY'), '12:34:56 PM', 'lavadora', 46.21);
+
+INSERT INTO transaccion (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo, costo)
+VALUES (3483242990598, 4860, TO_DATE('2/25/2021', 'MM/DD/YYYY'), '12:34:56 PM', 'secadora', 21.83);
+
+INSERT INTO transaccion (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo, costo)
+VALUES (7109769546037, 51474, TO_DATE('11/13/2019', 'MM/DD/YYYY'), '12:34:56 PM', 'lavadora', 84.57);
+
+INSERT INTO transaccion (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo, costo)
+VALUES (8459847232444, 74910, TO_DATE('7/21/2022', 'MM/DD/YYYY'), '12:34:56 PM', 'lavadora', 41.12);
+
+INSERT INTO transaccion (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo, costo)
+VALUES (7292520357375, 19273, TO_DATE('8/27/2023', 'MM/DD/YYYY'), '12:34:56 PM', 'secadora', 98.64);
+
+INSERT INTO transaccion (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo, costo)
+VALUES (9329585513159, 96979, TO_DATE('2/13/2023', 'MM/DD/YYYY'), '12:34:56 PM', 'secadora', 48.52);
+
+INSERT INTO transaccion (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo, costo)
+VALUES (3104898812995, 77718, TO_DATE('11/24/2020', 'MM/DD/YYYY'), '12:34:56 PM', 'secadora', 8.41);
+
+INSERT INTO transaccion (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo, costo)
+VALUES (2210122461219, 97788, TO_DATE('1/24/2022', 'MM/DD/YYYY'), '12:34:56 PM', 'lavadora', 54.40);
+
+INSERT INTO transaccion (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo, costo)
+VALUES (7051189428774, 49420, TO_DATE('11/29/2019', 'MM/DD/YYYY'), '12:34:56 PM', 'secadora', 0.35);
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Datos de la tabla reserva                                 -
+-- ----------------------------------------------------------------
+INSERT INTO reserva (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo)
+VALUES (2486754281307, 54279, TO_DATE('03/09/2020', 'MM/DD/YYYY'), '5:10 AM', 'secadora');
+
+INSERT INTO reserva (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo)
+VALUES (1325348569905, 14340, TO_DATE('05/07/2021', 'MM/DD/YYYY'), '6:04 PM', 'lavadora');
+
+INSERT INTO reserva (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo)
+VALUES (3483242990598, 4860, TO_DATE('03/02/2022', 'MM/DD/YYYY'), '10:51 PM', 'lavadora');
+
+INSERT INTO reserva (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo)
+VALUES (7109769546037, 51474, TO_DATE('01/23/2020', 'MM/DD/YYYY'), '3:11 PM', 'lavadora');
+
+INSERT INTO reserva (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo)
+VALUES (8459847232444, 74910, TO_DATE('10/02/2020', 'MM/DD/YYYY'), '11:17 PM', 'secadora');
+
+INSERT INTO reserva (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo)
+VALUES (7292520357375, 19273, TO_DATE('06/27/2020', 'MM/DD/YYYY'), '6:51 AM', 'secadora');
+
+INSERT INTO reserva (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo)
+VALUES (9329585513159, 96979, TO_DATE('10/15/2020', 'MM/DD/YYYY'), '1:04 PM', 'secadora');
+
+INSERT INTO reserva (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo)
+VALUES (3104898812995, 77718, TO_DATE('11/04/2023', 'MM/DD/YYYY'), '11:14 AM', 'secadora');
+
+INSERT INTO reserva (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo)
+VALUES (2210122461219, 97788, TO_DATE('10/28/2023', 'MM/DD/YYYY'), '9:53 PM', 'secadora');
+
+INSERT INTO reserva (licencia_cliente_pk_fk1, num_propiedad_equipo_pk_fk2, fecha_pk, hora_uso, tipo)
+VALUES (7051189428774, 49420, TO_DATE('05/31/2022', 'MM/DD/YYYY'), '4:35 PM', 'secadora');
+-- ----------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+-- ----------------------------------------------------------------
+-- -   Datos de la tabla equipo_mantenimiento                                -
+-- ----------------------------------------------------------------
+INSERT INTO equipo_mantenimiento (num_propiedad_pk_fk1, id_mantenimiento_pk_fk2, fecha_pk, tipo, comentario)
+VALUES (54279, 1, TO_DATE('07/05/2023', 'MM/DD/YYYY'), 'preventivo', 'Se realizo la limpieza del filtro de la lavadora.');
+
+INSERT INTO equipo_mantenimiento (num_propiedad_pk_fk1, id_mantenimiento_pk_fk2, fecha_pk, tipo, comentario)
+VALUES (14340, 2, TO_DATE('09/29/2023', 'MM/DD/YYYY'), 'correctivo', 'Se revisaron y ajustaron las conexiones electricas de la secadora.');
+
+INSERT INTO equipo_mantenimiento (num_propiedad_pk_fk1, id_mantenimiento_pk_fk2, fecha_pk, tipo, comentario)
+VALUES (4860, 3, TO_DATE('03/09/2023', 'MM/DD/YYYY'), 'predictivo', 'Se reemplazo la correa de la lavadora.');
+
+INSERT INTO equipo_mantenimiento (num_propiedad_pk_fk1, id_mantenimiento_pk_fk2, fecha_pk, tipo, comentario)
+VALUES (51474, 4, TO_DATE('03/13/2023', 'MM/DD/YYYY'), 'rutinario', 'Se realizo la limpieza del tambor de la secadora.');
+
+INSERT INTO equipo_mantenimiento (num_propiedad_pk_fk1, id_mantenimiento_pk_fk2, fecha_pk, tipo, comentario)
+VALUES (74910, 5, TO_DATE('06/26/2023', 'MM/DD/YYYY'), 'programado', 'Se verifico el funcionamiento del panel de control de la lavadora.');
+
+INSERT INTO equipo_mantenimiento (num_propiedad_pk_fk1, id_mantenimiento_pk_fk2, fecha_pk, tipo, comentario)
+VALUES (19273, 6, TO_DATE('02/18/2023', 'MM/DD/YYYY'), 'urgente', 'Se ajustaron los niveles de agua de la secadora.');
+
+INSERT INTO equipo_mantenimiento (num_propiedad_pk_fk1, id_mantenimiento_pk_fk2, fecha_pk, tipo, comentario)
+VALUES (96979, 7, TO_DATE('09/17/2023', 'MM/DD/YYYY'), 'periodico', 'Se realizo la limpieza de los conductos de ventilacion de la lavadora.');
+
+INSERT INTO equipo_mantenimiento (num_propiedad_pk_fk1, id_mantenimiento_pk_fk2, fecha_pk, tipo, comentario)
+VALUES (77718, 8, TO_DATE('10/09/2023', 'MM/DD/YYYY'), 'preventivo anual', 'Se reemplazo el termostato de la secadora.');
+
+INSERT INTO equipo_mantenimiento (num_propiedad_pk_fk1, id_mantenimiento_pk_fk2, fecha_pk, tipo, comentario)
+VALUES (97788, 9, TO_DATE('02/18/2023', 'MM/DD/YYYY'), 'correctivo mensual', 'Se verifico el correcto drenaje de la lavadora.');
+
+INSERT INTO equipo_mantenimiento (num_propiedad_pk_fk1, id_mantenimiento_pk_fk2, fecha_pk, tipo, comentario)
+VALUES (49420, 10, TO_DATE('08/12/2023', 'MM/DD/YYYY'), 'predictivo trimestral', 'Se ajustaron los tiempos de secado de la secadora.');
+-- ----------------------------------------------------------------
+-- -   Guarda los datos. De no ponerse, como quiera los guarda   -
+-- - en una corrida.  Se deja para explicar su uso.              -
+-- ----------------------------------------------------------------
+COMMIT;
