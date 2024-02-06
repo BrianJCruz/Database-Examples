@@ -1,0 +1,60 @@
+
+Wed Dec 13                                                                                                                                                                 page    1
+                                                                                REPORTE DE EMPLEADOS
+                                                                                     ANYBAL GYM
+
+NOMBRE               CELULAR       EMAIL                               DIRECCION                                                                                                    
+-------------------- ------------- ----------------------------------- ----------------------------------------------------------------------                                       
+Alejandro Morales    +5544332211   alejandro.morales@email.com         404 Kiwi Ct, Apt. 67, Green Meadows, Jacksonville, Georgia                                                   
+                                                                                                                                                                                    
+Carlos Sandoval      +1122334455   carlos.rodriguez@email.com          789 Pine Lane, Suite 501, Lakeside, Greenville, Kentucky                                                     
+                                                                                                                                                                                    
+Daniel SAnchez       +6677889900   daniel.sanchez@email.com            606 Apple Ave, , Orchardview, Boise, New Jersey                                                              
+                                                                                                                                                                                    
+Eduardo Gutierrez    +9988776655   eduardo.gutierrez@email.com         111 Pine Avenue, Suite 101, Urban Center, Guaynabo, Puerto Rico                                              
+                                                                                                                                                                                    
+Gabriela Mendoza     +123456789    gabriela.mendoza@email.com          202 Banana Blvd, Apt. 23, Tropicana Estates, Greenville, Michigan                                            
+                                                                                                                                                                                    
+Hector Cruz          +7877638899   hector.cruz@gmail.com               543 Cedar Drive, Apt 7C, Coastal Area, Orlando, Florida                                                      
+                                                                                                                                                                                    
+Isabel Padilla       +9988776655   isabel.gomez@email.com              808 Pineapple Ln, Apt. 45, Sunny Heights, Buffalo, Washington                                                
+                                                                                                                                                                                    
+Javier HernAndez     +1122334455   javier.hernandez@email.com          333 Maple Street, Suite 501, Residential Area, Guaynabo, Puerto Rico                                         
+                                                                                                                                                                                    
+Jorge Sandoval       +5544332211   maria.fernandez@email.com           876 Birch Street, Apt 3D, Beachside, Orlando, Florida                                                        
+                                                                                                                                                                                    
+Jose Gomez           +123456789    jose.gomez@email.com                123 Main Street, Apt 4B, Downtown, Frankfort, Kentucky                                                       
+                                                                                                                                                                                    
+Laura Perez          +6677889900   laura.perez@email.com               222 Oak Lane, Apt 2A, Commercial Zone, Guaynabo, Puerto Rico                                                 
+                                                                                                                                                                                    
+                                                                                ReporteEmpleado.txt
+
+Wed Dec 13                                                                                                                                                                 page    2
+                                                                                REPORTE DE EMPLEADOS
+                                                                                     ANYBAL GYM
+
+NOMBRE               CELULAR       EMAIL                               DIRECCION                                                                                                    
+-------------------- ------------- ----------------------------------- ----------------------------------------------------------------------                                       
+Lucy Torres          +987654321    ana.lopez@email.com                 456 Oak Avenue, Suite 302, Central District, Greenville, Kentucky                                            
+                                                                                                                                                                                    
+Lugo Velez           +7874566678   lugo.velez@gmail.com                210 Maple Road, Apt 1A, Seaside, Orlando, Florida                                                            
+                                                                                                                                                                                    
+Mariana GonzAlez     +1122334455   mariana.gonzalez@email.com          303 Papaya Dr, Apt. 56, Beachside, Jacksonville, Georgia                                                     
+                                                                                                                                                                                    
+Miguel Lopez         +7874457762   miguel.lopez@gmail.com              101 Elm Street, Apt 2C, Hilltop, Greenville, Kentucky                                                        
+                                                                                                                                                                                    
+Monica Garcia        +6677889900   monica.garcia@email.com             101 Coconut Ave, Suite 18, Palm Gardens, Greenville, Michigan                                                
+                                                                                                                                                                                    
+Patricia Maldonado   +1122334455   patricia.maldonado@email.com        707 Grape St, Apt. 12, Vineyard Hills, Boise, New Jersey                                                     
+                                                                                                                                                                                    
+Ricardo Vargas       +987654321    ricardo.vargas@email.com            303 Papaya Dr, Apt. 56, Beachside, Jacksonville, Georgia                                                     
+                                                                                                                                                                                    
+Sergio Martinez      +5544332211   sergio.martinez@email.com           909 Mango St, Room 101, Orchardview, Lexington, Louisiana                                                    
+                                                                                                                                                                                    
+Valentina Peralta    +9988776655   valentina.peralta@email.com         505 Berry Ln, Suite 8, Berriewood, Jacksonville, Georgia                                                     
+                                                                                                                                                                                    
+-------------------- *************                                                                                                                                                  
+                  20                                                                                                                                                                
+
+
+                                                                                ReporteEmpleado.txt

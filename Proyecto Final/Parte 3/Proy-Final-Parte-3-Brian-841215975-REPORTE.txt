@@ -1,0 +1,42 @@
+REM *********************************************
+REM *   Author: Brian J. Cruz Castro	        *
+REM *   Comentarios: Este sript corre y crea *
+REM *   un reporte de los empleados.            *
+REM *********************************************
+SET ECHO OFF
+SET PAGESIZE 30
+SET LINESIZE 180
+SET FEEDBACK OFF
+TTITLE 'REPORTE DE EMPLEADOS|ANYBAL GYM'
+BTITLE 'ReporteEmpleado.txt'
+COLUMN  nombre              HEADING  'NOMBRE'          FORMAT A20
+COLUMN  celular             HEADING  'CELULAR'         FORMAT A13
+COLUMN  email  				HEADING  'EMAIL'           FORMAT A35
+COLUMN  direccion           HEADING  'DIRECCION'       FORMAT A70
+BREAK ON nombre    SKIP 1  ON  nombre
+BREAK ON email     SKIP 1  ON  nombre
+BREAK ON celular   SKIP 1  ON  REPORT
+COMPUTE COUNT LABEL 'Empleados' OF nombre ON REPORT
+SPOOL ON
+SPOOL "C:\Users\brian\OneDrive\Escritorio\DataBase\Proyecto Final\Parte 3\ReporteEmpleado.txt"
+
+SELECT e.nombre ||' '|| e.apellido_paterno AS NOMBRE,
+       e.celular,
+       e.email,
+       d.linea_1 ||', '|| d.linea_2 ||', '|| d.urban_barrio ||', '|| c.nombre ||', '|| es.nombre AS DIRECCION
+FROM empleado e
+    JOIN direccion d ON e.id_direccion_fk3 = d.id_pk
+    JOIN ciudad c ON d.id_ciudad_fk1 = c.id_pk
+    JOIN estado es ON c.id_estado_fk1 = es.id_pk
+    ORDER BY e.nombre;
+SPOOL OFF
+CLEAR COMPUTE
+CLEAR BREAK
+COLUMN nombre               CLEAR
+COLUMN celular              CLEAR
+COLUMN email                CLEAR
+BTITLE  OFF
+TTITLE  OFF
+SET FEEDBACK  ON
+SET PAGESIZE 14
+SET ECHO ON

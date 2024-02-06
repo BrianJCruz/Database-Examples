@@ -1,0 +1,235 @@
+pregunta 6
+
+---------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+
+SELECT a.nombre AS actividad_nombre, h.lugar AS LUGAR, c.nombre ||' '|| c.apellido_paterno AS CLIENTE, e.nombre ||' '|| e.apellido_paterno AS ENTRENADOR, eq.nombre AS EQUIPO
+FROM sesion s
+    JOIN horario h ON s.codigo_horario_fk4 = h.codigo_pk
+    JOIN actividad a ON h.codigo_actividad_fk = a.codigo_pk
+    JOIN cliente c ON s.real_id_cliente_fk2 = c.real_id_pk
+    JOIN empleado e ON s.numero_empleado_fk3 = e.numero_pk
+    LEFT JOIN equipo eq ON s.codigo_equipo_fk5 = eq.codigo_pk
+WHERE s.id_pk = 600001;
+
+pregunta 5
+
+---------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+
+SELECT e.codigo_pk, e.nombre, e.costo
+FROM equipo e
+WHERE costo < (SELECT AVG(costo) FROM equipo)
+ORDER BY costo;
+
+pregunta 9
+
+---------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+
+SELECT f.id_pk AS id_facilidad, COUNT(c.real_id_pk) AS total_clientes
+FROM facilidad f
+LEFT JOIN cliente c ON f.id_pk = c.id_facilidad_fk2
+GROUP BY f.id_pk;
+
+pregunta 10
+
+
+-------------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+
+SELECT
+    c.nombre AS cliente_nombre,
+    e.nombre AS empleado_nombre,
+    c.id_direccion_fk3 AS id_direccion_cliente,
+    e.id_direccion_fk3 AS id_direccion_empleado,
+    d.linea_1 ||', '|| d.linea_2 ||', '|| d.urban_barrio ||', '|| d.zipcode AS DIRECCION
+FROM cliente c
+JOIN
+    empleado e ON c.id_direccion_fk3 = e.id_direccion_fk3
+JOIN
+    direccion d ON c.id_direccion_fk3 = d.id_pk;
+
+pregunta 11
+
+-------------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+
+--1)
+DECLARE ID_CLIENTE NUMBER(8);
+BEGIN
+    -- Buscar cliente que haya participado en una sesion y almacenarlo
+    SELECT c.real_id_pk INTO ID_CLIENTE FROM cliente c, sesion s WHERE c.real_id_pk = s.real_id_cliente_fk2 AND ROWNUM = 1;
+    
+    -- Eliminar dependencia de ese cliente
+    DELETE FROM sesion WHERE real_id_cliente_fk2 = ID_CLIENTE;
+
+    -- Eliminar instancia del cliente
+    DELETE FROM cliente WHERE real_id_pk = ID_CLIENTE;
+END;
+/
+
+--2)
+-------------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+INSERT INTO sesion 
+VALUES (600001, 30002, 400002, 500002, 'L08081123', 'MC001', 'activo', 'Sesion de las 8:00 AM');
+
+
+--3)
+-------------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+SELECT numero_pk, nombre, inicial, apellido_paterno, apellido_materno 
+FROM empleado WHERE numero_pk = 500002;
+UPDATE empleado SET nombre = 'Luisa' WHERE numero_pk = 500002;
+SELECT numero_pk, nombre, inicial, apellido_paterno, apellido_materno FROM empleado WHERE numero_pk = 500002;
+
+
+--4)
+-------------------------------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema. Se tienen que indicar –
+-- ----------------------------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+DELETE FROM sesion;
+DELETE FROM cliente;
+DELETE FROM membresia;
+SELECT * FROM membresia;
+ROLLBACK;
+SELECT * FROM membresia;
+
+V. Reporte
+
+VI. View
+
+DROP VIEW administracion;
+DROP VIEW entrenador;
+DROP VIEW mantenimiento;
+
+---------------------------------------
+-- Sub-tabla ADMINISTRACION
+---------------------------------------
+CREATE TABLE ADMINISTRACION AS
+SELECT * FROM empleado WHERE tipo = 'A';
+
+---------------------------------------
+-- Sub-tabla MANTENIMIENTO
+---------------------------------------
+CREATE TABLE MANTENIMIENTO AS
+SELECT * FROM empleado WHERE tipo = 'M';
+
+---------------------------------------
+-- Sub-tabla ENTRENADOR
+---------------------------------------
+CREATE TABLE ENTRENADOR AS
+SELECT * FROM empleado WHERE tipo = 'E';
+
+
+
+----------------------------------------------
+-- - Nombre de Usuario y Fecha del Sistema.  -
+-- -------------------------------------------
+SHOW USER
+SELECT systimestamp FROM dual;
+----------------------------------------------
+-- View administracion                       -
+----------------------------------------------
+CREATE VIEW aministracion AS
+SELECT
+    numero_pk,
+    id_facilidad_fk1,
+    nombre,
+    inicial,
+    apellido_paterno,
+    apellido_materno,
+    id_direccion_fk3,
+    fecha_nacimiento,
+    genero,
+    celular,
+    email,
+    tipo,
+    TO_CHAR(salario_mensual, '$999,999.99') AS salario_mensual,
+    TO_CHAR(bono, '$999,999.99') AS bono
+FROM empleado
+    WHERE tipo = 'A';
+    WITH CHECK_OPTION;
+
+----------------------------------------------
+-- View entrenador                           -
+----------------------------------------------
+CREATE VIEW entrenador AS
+SELECT
+    numero_pk,
+    id_facilidad_fk1,
+    nombre,
+    inicial,
+    apellido_paterno,
+    apellido_materno,
+    id_direccion_fk3,
+    fecha_nacimiento,
+    genero,
+    celular,
+    email,
+    tipo,
+    numero_contrato,
+    fecha_contrato,
+    TO_CHAR(cantidad_contrato, '$99,999.99') AS cantidad_contrato,
+FROM empleado
+    WHERE tipo = 'E'
+    WITH CHECK_OPTION;
+
+----------------------------------------------
+-- View mantenimiento                        -
+----------------------------------------------
+CREATE VIEW mantenimiento AS
+SELECT
+    numero_pk,
+    id_facilidad_fk1,
+    nombre,
+    inicial,
+    apellido_paterno,
+    apellido_materno,
+    id_direccion_fk3,
+    fecha_nacimiento,
+    genero,
+    celular,
+    email,
+    tipo,
+    TO_CHAR(horas_trabajadas, '$99,999.99') AS horas_trabajadas,
+    TO_CHAR(rate, '$99,999.99') AS rate,
+FROM empleado
+    WHERE tipo = 'M'
+    WITH CHECK_OPTION;
+
+----------------------------------------------
+-- VIEWS                                     -
+----------------------------------------------
+SELECT * FROM administracion;
+SELECT * FROM entrenador;
+SELECT * FROM mantenimiento;
+
+
+
+
+
